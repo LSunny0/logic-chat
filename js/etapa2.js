@@ -29,56 +29,77 @@ const resultadoResumo = document.getElementById('resultadoResumo');
 let mensagens = [];
 let totalMensagens = 0;
 
-// ETAPA 2
-// Use o valor do select para mudar o tipo da mensagem: aluno, bot ou sistema.
-function enviarMensagem() {
-    const autor = autorMensagem.value;
-    const texto = textoMensagem.value.trim();
-    
-    if(texto == '') {
-        statusChat.textContent = 'Digite uma mensagem antes de enviar.';
-        return
-    }
+// ETAPA 3
+// Separe o programa em funções menores.
+function limparTexto(texto) {
+    return texto.trim();
+}
 
-    let classe = 'message--sistema';
-    let nomeAutor = 'Sistema';
 
+function autorValido(autor) {
+    return autor === 'aluno' || autor === 'bot' || autor === 'sistema';
+}
+
+function nomeDoAutor(autor){
     if (autor === 'aluno') {
-        classe = 'message--aluno';
-        nomeAutor = 'aluno';
-    }else if (autor === 'bot'){
-        classe = 'message--bot'
-        nomeAutor = 'bot';
+        return 'Aluno';
     }
-
-    if (totalMensagens === 0) {
-        listaMensagens.innerHTML = '';
+    if (autor === 'bot') {
+        return 'Bot';
     }
+    return 'Sistema';
+}
+function criarMensagem(autor, texto) {
+    if (!autorValido(autor)) {
+        autor = 'sistema';
+    }
+    return {
+        autor: autor,
+        texto: texto,
+        hora: new Date().toLocaleTimeString('pt-BR', {hour:'2-digit', minute: '2-digit' })
+    };
+}
 
-    const caixa = document.createElement('div');
-    caixa.className = 'message ' + classe;
+function renderizarMensagem(mensagem) {
+const caixa = document.createElement('div');
+    caixa.className = 'message message--' + mensagem.autor;
 
     const meta = document.createElement('span');
     meta.className = 'message__meta';
-    meta.textContent = nomeAutor;
+    meta.textContent = nomeDoAutor(mensagem.autor) + ' • ' + mensagem.hora;
 
     const paragrafo = document.createElement('p');
-    paragrafo.textContent = texto;
+    paragrafo.textContent = mensagem.texto;
 
     caixa.appendChild(meta)
     caixa.appendChild(paragrafo)
     listaMensagens.appendChild(caixa);
+}
+function enviarMensagem() {
+    const autor = autorMensagem.value;
+    const texto = limparTexto(textoMensagem.value);
+    
+    if(texto == '') {
+        statusChat.textContent = 'Digite uma mensagem antes de enviar.';
+        return;
+    }
+
+    
+    if (totalMensagens === 0) {
+        listaMensagens.innerHTML = '';
+    }
+
+    const mensagem = criarMensagem(autor, texto);
+    renderizarMensagem(mensagem);
+    
     totalMensagens++;
     statusChat.textContent = totalMensagens + 'mensagem(ns) enviada(s) no chat.';
     textoMensagem.value = '';
 }
 
-
 // ETAPA 2
 // Use o valor do select para mudar o tipo da mensagem: aluno, bot ou sistema.
 
-// ETAPA 3
-// Separe o programa em funções menores.
 
 
 // ETAPA 4
