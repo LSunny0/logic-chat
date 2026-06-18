@@ -1,0 +1,2 @@
+git config --global user.name LSunny0
+git config --global user.email luso1802@gmail.com
